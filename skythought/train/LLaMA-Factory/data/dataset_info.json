@@ -634,7 +634,7 @@
     "folder": "python"
   },
   "Sky-T1": {
-    "file_name": "your data path here",
+    "file_name": "NovaSky-AI/Sky-T1_data_17k",
     "formatting": "sharegpt",
     "columns": {
       "messages": "conversations",

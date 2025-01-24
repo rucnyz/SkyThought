@@ -13,7 +13,7 @@ from .taco.testing_util import run_test as taco_run_test
 from .math.testing_util import strip_answer_string, get_multiple_choice_answer, extract_answer, math_equal, mmlu_pro_extract_answer
 from .livecodebench.testing_util import unsafe_lcb_runTests, map_to_example, has_test_type, post_process_code, translate_private_test_cases
 from .common import TimeoutException, timeout
-from util.model_utils import *
+from .model_utils import *
 
 def has_code(response):
     pattern = r"```(?:[a-zA-Z]*)\n(.*?)```"

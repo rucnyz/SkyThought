@@ -1,29 +1,25 @@
 # From APPS
 import argparse
+import faulthandler
 import json
 import os
-import sys
-import io
-import faulthandler
 import platform
-
-# used for debugging to time steps
-from datetime import datetime
-
 # to run the solution files we're using a timing based approach
 import signal
-
-import numpy as np
+import sys
+# used for debugging to time steps
+from datetime import datetime
+from enum import Enum
 # for capturing the stdout
 from io import StringIO
-from typing import get_type_hints
-from typing import List, Tuple
+from types import ModuleType
+from typing import List
 # used for testing the code that reads from input
 from unittest.mock import patch, mock_open
 
-from pyext import RuntimeModule
+import numpy as np
 
-from enum import Enum
+
 class CODE_TYPE(Enum):
     call_based = 0
     standard_input = 1
@@ -164,7 +160,8 @@ def run_test(problem=None, problem_list:List[str]=None, prob_index:int=None,
                 print(f"sol = {sol}")
             signal.alarm(timeout)
             try:
-                tmp_sol = RuntimeModule.from_string("tmp_sol", "", sol)
+                tmp_sol = ModuleType("tmp_sol", "")
+                exec(sol, tmp_sol.__dict__)
                 if "class Solution" not in test:
                     tmp = tmp_sol
                 else:
@@ -210,7 +207,8 @@ def run_test(problem=None, problem_list:List[str]=None, prob_index:int=None,
             method_name = "code"
             signal.alarm(timeout)
             try:
-                tmp_sol = RuntimeModule.from_string("tmp_sol", "", sol)
+                tmp_sol = ModuleType("tmp_sol", "")
+                exec(sol, tmp_sol.__dict__)
                 tmp = tmp_sol
                 signal.alarm(0)
             except Exception as e:
