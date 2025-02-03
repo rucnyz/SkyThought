@@ -1,5 +1,7 @@
 ### model
 model_name_or_path: Qwen/Qwen2.5-32B-Instruct
+use_unsloth_gc: true
+enable_liger_kernel: true
 
 ### method
 stage: sft
@@ -8,15 +10,17 @@ finetuning_type: full
 deepspeed: examples/deepspeed/ds_z3_offload_config.json  # choices: [ds_z0_config.json, ds_z2_config.json, ds_z3_config.json]
 
 ### dataset
-dataset: Sky-T1-HF
+dataset: My-VD-QWQ,Sky-T1-HF
 template: qwen25
 cutoff_len: 16384
-max_samples: 1000000
 overwrite_cache: true
-preprocessing_num_workers: 16
+streaming: true
+mix_strategy: interleave_under
+interleave_probs: 0.5,0.5
+packing: true
 
 ### output
-output_dir: saves/Sky-T1-32B-Preview/full/original
+output_dir: saves/SKY-VD-QWQ-Qwen-32B/full/original
 logging_steps: 1
 save_steps: 100
 plot_loss: true
@@ -25,12 +29,12 @@ plot_loss: true
 per_device_train_batch_size: 1
 gradient_accumulation_steps: 12
 learning_rate: 1.0e-5
-num_train_epochs: 3.0
+max_steps: 3000
 lr_scheduler_type: cosine
 warmup_ratio: 0.1
 bf16: true
 ddp_timeout: 180000000
 
 report_to: wandb
-run_name: Sky-T1-32B
+run_name: qwen2_32B_full_sft_vdqwq_sky
 

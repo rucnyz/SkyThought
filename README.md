@@ -43,14 +43,14 @@ We open source the code and scripts we used for data curation, training, and eva
 Following, we show our evaluation results for the Sky-T1-32B-Preview model across math, coding, and science benchmarks.
 
 ### Evaluation results
-| Metric                | Sky-T1-32B-Preview | Qwen-2.5-32B-Instruct | QwQ   | o1-preview |
-|-----------------------|---------------------|--------|-------|------------|
-| Math500              | 86.4                    | 81.4    | 92.2 | 81.4       |
-| AIME2024             | 43.3                    | 16.7    | 50.0  | 40.0       |
-| LiveCodeBench-Easy   | 86.3                    | 84.6   | 90.7  | 92.9       |
-| LiveCodeBench-Medium | 56.8                    | 40.8   | 56.3  | 54.9       |
-| LiveCodeBench-Hard   | 17.9                    | 9.8   | 17.1  | 16.3       |
-| GPQA-Diamond         | 56.8                    | 45.5   | 52.5  | 75.2       |
+| Metric               | Sky-T1-32B-Preview | Qwen-2.5-32B-Instruct | QwQ  | o1-preview |
+|----------------------|--------------------|-----------------------|------|------------|
+| Math500              | 86.4               | 81.4                  | 92.2 | 81.4       |
+| AIME2024             | 43.3               | 16.7                  | 50.0 | 40.0       |
+| LiveCodeBench-Easy   | 86.3               | 84.6                  | 90.7 | 92.9       |
+| LiveCodeBench-Medium | 56.8               | 40.8                  | 56.3 | 54.9       |
+| LiveCodeBench-Hard   | 17.9               | 9.8                   | 17.1 | 16.3       |
+| GPQA-Diamond         | 56.8               | 45.5                  | 52.5 | 75.2       |
 
 
 

@@ -21,16 +21,19 @@ def main():
             for _, v in cur_data.items():
                 prompt = v["prompt"]
                 response_data = v["responses"]
-
+                added = False
                 for cur_temp, cur_temp_response in response_data.items():
+                    if added:
+                        break
                     # Only support 0.7 for this version
-                    assert cur_temp == "0.7", "Only support a single temperature=0.7 now."
+                    # assert cur_temp == "0.7", "Only support a single temperature=0.7 now."
                     # Accept this data
-                    if cur_temp_response["correctness"]:
+                    if cur_temp_response[0]["correctness"]:
+                        added = True
                         # Create the conversation format
                         conversations = [
                             {"from": "user", "value": prompt},
-                            {"from": "assistant", "value": cur_temp_response["processed_content"]}
+                            {"from": "assistant", "value": cur_temp_response[0]["processed_content"]}
                         ]
 
                         # Prepare the final structure

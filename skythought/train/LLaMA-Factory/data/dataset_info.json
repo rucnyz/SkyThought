@@ -634,7 +634,7 @@
     "folder": "python"
   },
   "Sky-T1": {
-    "file_name": "NovaSky-AI/Sky-T1_data_17k",
+    "file_name": "./data/Sky-T1.json",
     "formatting": "sharegpt",
     "columns": {
       "messages": "conversations",
@@ -647,6 +647,72 @@
       "assistant_tag": "assistant"
     }
   },
+  "My-Sky-T1": {
+    "file_name": "../../../../data/train_data.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "system": "system"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "My-VD-DS": {
+    "file_name": "../../../../../vulllm/all_dataset/sky/deepseek-reasoner_train.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "system": "system"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "My-VD-QWQ": {
+    "file_name": "../../../../../vulllm/all_dataset/sky/QwQ-32B-Preview_train.json",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "system": "system"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "Sky-T1-HF": {
+    "hf_hub_url": "NovaSky-AI/Sky-T1_data_17k",
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "system": "system"
+    },
+    "tags": {
+      "role_tag": "from",
+      "content_tag": "value",
+      "user_tag": "user",
+      "assistant_tag": "assistant"
+    }
+  },
+  "Sky-T1-simpo-HF": {
+    "hf_hub_url": "NovaSky-AI/Sky-T1_preference_data_10k",
+    "ranking": true,
+    "formatting": "sharegpt",
+    "columns": {
+      "messages": "conversations",
+      "chosen": "chosen",
+      "rejected": "rejected"
+    }
+  },
   "Sky-T1-simpo": {
     "file_name": "your data path here",
     "ranking": true,
@@ -656,5 +722,11 @@
       "chosen": "chosen",
       "rejected": "rejected"
     }
+  },
+  "WebInstruct-CFT-4K": {
+    "file_name": "WebInstruct-CFT-4K.json"
+  },
+  "WebInstruct-CFT-50K": {
+    "file_name": "WebInstruct-CFT-50K.json"
   }
 }

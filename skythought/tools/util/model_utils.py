@@ -50,6 +50,7 @@ Now, begin with the [ASSESS] action for the following task:
         Now, try to solve the following question through the above guidelines:",
     "openai/o1-mini": "Question: {input}\nAnswer: ",
     "openai/o1-preview": "Question: {input}\nAnswer: ",
+    "deepseek-reasoner": "Question: {input}\nAnswer: ",
     "openai/gpt-4o-mini": "User: {input}\nPlease reason step by step, and put your final answer within \\boxed{{}}.\n\nAssistant:",
 }
 
@@ -59,13 +60,26 @@ MODEL_TO_NAME = {
     "Qwen/Qwen2.5-72B-Instruct": "Qwen2.5-72B-Instruct",
     "Qwen/Qwen2.5-32B-Instruct": "Qwen2.5-32B-Instruct",
     "Qwen/Qwen2.5-7B-Instruct": "Qwen2.5-7B-Instruct",
+    "Qwen/Qwen2.5-3B-Instruct": "Qwen2.5-3B-Instruct",
     "Qwen/Qwen2.5-1.5B-Instruct": "Qwen2.5-1.5B-Instruct",
     "Qwen/Qwen2.5-Math-7B-Instruct": "Qwen2.5-Math-7B-Instruct",
     "PRIME-RL/Eurus-2-7B-PRIME": "Eurus-2-7B-PRIME",
     "NovaSky-AI/Sky-T1-32B-Preview": "Sky-T1-32B-Preview",
     "openai/o1-mini": "o1-mini",
     "openai/o1-preview": "o1-preview",  
+    "deepseek-r1": "deepseek-r1",
+    "deepseek-reasoner": "deepseek-r1",
     "openai/gpt-4o-mini": "gpt-4o-mini",
+    "/scratch/yuzhou/projects/skythought/skythought/train/LLaMA-Factory/saves/Qwen-32B/full/original/checkpoint-240":
+        "Qwen-32B-sft-240",
+    "/home/rucnyz/projects/skythought/skythought/train/LLaMA-Factory/saves/Qwen-7B-Coder/full/original/checkpoint-720":
+        "Qwen-7B-Coder-720",
+    "/home/rucnyz/projects/skythought/skythought/train/LLaMA-Factory/saves/Qwen-7B/full/5e-5/checkpoint-900":
+        "Qwen-7B-5e-5-900",
+    "/home/rucnyz/projects/skythought/skythought/train/LLaMA-Factory/saves/Qwen-7B/full/5e-5/checkpoint-100":
+        "Qwen-7B-5e-5-100",
+    "/home/rucnyz/projects/skythought/skythought/train/LLaMA-Factory/saves/Qwen-7B/full/5e-5/checkpoint-300":
+        "Qwen-7B-5e-5-300",
 }
 
 SUBPROBLEM_SPLIT_PROMPT = """

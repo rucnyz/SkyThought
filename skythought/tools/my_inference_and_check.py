@@ -40,6 +40,12 @@ def fetch_response_openai(llm, model_name, max_tokens, temp, prompt):
             temperature=1,  # has to be 1
             max_completion_tokens=max_tokens,
         )
+    elif "deepseek-reasoner" in model_name:
+        prompt.pop(0)
+        response = llm.chat.completions.create(
+            model=model_name,
+            messages=prompt,
+            max_tokens=max_tokens,)
     else:
         response = llm.chat.completions.create(
             model=model_name,
@@ -76,7 +82,7 @@ def perform_inference_and_check(
     )
 
     for temp in temperatures:
-        if args.model.startswith("openai"):
+        if args.model.startswith("openai") or args.model.startswith("deepseek-reasoner"):
             fetch_partial = partial(
                 fetch_response_openai, llm, args.model, max_tokens, temp
             )
@@ -324,7 +330,13 @@ def perform_inference_and_save(
 
             with concurrent.futures.ThreadPoolExecutor(max_workers=16) as e:
                 responses = list(e.map(fetch_partial, conversations))
+        elif args.model.startswith("deepseek-reasoner"):
+            fetch_partial = partial(
+                fetch_response_openai, llm, args.model, max_tokens, temp
+            )
 
+            with concurrent.futures.ThreadPoolExecutor(max_workers=16) as e:
+                responses = list(e.map(fetch_partial, conversations))
         else:
             sampling_params = SamplingParams(
                 n=args.n, max_tokens=max_tokens, temperature=temp
@@ -417,7 +429,7 @@ def perform_inference_and_save(
         json.dump(results, file, ensure_ascii=False, indent=4, cls=NumpyEncoder)
 
 
-def inference_eval(model, dataset, split, tp, temperatures, **kwargs):
+def inference_eval(llm, model, dataset, split, tp, temperatures, **kwargs):
     args = argparse.Namespace(
         model=model,
         dataset=dataset,
@@ -479,23 +491,17 @@ def inference_eval(model, dataset, split, tp, temperatures, **kwargs):
         perform_check(handler, temperatures, result_file, args)
         return
     elif args.inference:
-        llm = (
-            OpenAI()
-            if args.model.startswith("openai")
-            else LLM(model=args.model, tensor_parallel_size=args.tp)
-        )
         system_prompt = SYSTEM_PROMPT[args.model]
         perform_inference_and_save(
             handler, temperatures, max_tokens, result_file, llm, system_prompt, args
         )
         return
 
-    llm = (
-        OpenAI()
-        if args.model.startswith("openai")
-        else LLM(model=args.model, tensor_parallel_size=args.tp)
-    )
-    system_prompt = SYSTEM_PROMPT[args.model]
+    if args.model not in SYSTEM_PROMPT:
+        system_prompt = SYSTEM_PROMPT["NovaSky-AI/Sky-T1-32B-Preview"]
+        print("Using default system prompt.")
+    else:
+        system_prompt = SYSTEM_PROMPT[args.model]
     perform_inference_and_check(
         handler, temperatures, max_tokens, result_file, llm, system_prompt, args
     )

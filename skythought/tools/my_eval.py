@@ -1,7 +1,12 @@
 import argparse
 import io
 import json
+import os
 from contextlib import redirect_stdout
+
+from dotenv import load_dotenv
+from openai import OpenAI
+from vllm import LLM
 
 from skythought.tools.my_inference_and_check import inference_eval
 
@@ -75,6 +80,7 @@ def write_logs_to_file(logs, output_file):
 
 
 def main():
+    load_dotenv()
     args = parse_arguments()
 
     # Extract the arguments
@@ -87,6 +93,15 @@ def main():
     # Hold all logs
     all_logs = ""
     results = {}
+    if args.model.startswith("openai"):
+        llm = OpenAI()
+    elif args.model.startswith("deepseek"):
+        llm = OpenAI(
+            base_url="https://api.deepseek.com",
+            api_key=os.getenv("DEEPSEEK_API_KEY"),
+        )
+    else:
+        llm = LLM(model=args.model, tensor_parallel_size=args.tp)
 
     # Run the Python command for each eval and collect logs
     for eval_name in evals:
@@ -96,6 +111,7 @@ def main():
             "split": eval_to_split[eval_name],
             "tp": int(tp),
             "temperatures": temperatures,
+            "llm": llm,
         }
 
         if args.filter_difficulty:
