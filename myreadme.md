@@ -44,6 +44,14 @@ llamafactory-cli train my_scripts/qwen2_full_simpo.yaml
 python gpu_monitor.py --interval 30 "MASTER_PORT=29501 llamafactory-cli train my_scripts/vd_ds_qwen2_full_sft.yaml"
 ```
 
+```shell
+python my_eval.py --model NovaSky-AI/Sky-T1-32B-Preview \
+--evals=MATH500,AIME,GPQADiamond \
+--tp=4 \
+--output_file=results.txt \
+--temperatures=0
+```
+
 | Metric       | Sky-T1-32B-Preview | my-32B-240 | 32B  | my-7B-720 | 7B    | 3B   | QwQ  | ds-r1 | o1-preview |
 |--------------|--------------------|------------|------|-----------|-------|------|------|-------|------------|
 | Math500      | 87.6               | 86.4       | 82.2 | 65.2      | 76.4  | 63.8 | 90.8 |       | 81.4       |
