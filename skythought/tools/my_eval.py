@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from vllm import LLM
 
-from skythought.tools.my_inference_and_check import inference_eval
+from my_inference_and_check import inference_eval
 
 # Define eval to split mapping
 eval_to_split = {

@@ -10,8 +10,8 @@ from openai import OpenAI
 from tqdm import tqdm
 from vllm import LLM, SamplingParams
 
-from skythought.tools.util.model_utils import MODEL_TO_NAME, SYSTEM_PROMPT
-from skythought.tools.util.task_handlers import (
+from util.model_utils import MODEL_TO_NAME, SYSTEM_PROMPT
+from util.task_handlers import (
     TaskHandler,
     NUMINATaskHandler,
     TASK_HANDLERS,

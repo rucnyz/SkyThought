@@ -1,3 +1,6 @@
+import os
+
+
 SYSTEM_PROMPT = {
     "Qwen/Qwen2-7B-Instruct": "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.",
     "Qwen/QwQ-32B-Preview": "You are a helpful and harmless assistant. You are Qwen developed by Alibaba. You should think step-by-step.",
@@ -54,7 +57,7 @@ Now, begin with the [ASSESS] action for the following task:
     "openai/gpt-4o-mini": "User: {input}\nPlease reason step by step, and put your final answer within \\boxed{{}}.\n\nAssistant:",
 }
 
-MODEL_TO_NAME = {
+_MODEL_TO_NAME = {
     "Qwen/Qwen2-7B-Instruct": "Qwen2-7B-Instruct",
     "Qwen/QwQ-32B-Preview": "QwQ-32B-Preview",
     "Qwen/Qwen2.5-72B-Instruct": "Qwen2.5-72B-Instruct",
@@ -81,6 +84,14 @@ MODEL_TO_NAME = {
     "/home/rucnyz/projects/skythought/skythought/train/LLaMA-Factory/saves/Qwen-7B/full/5e-5/checkpoint-300":
         "Qwen-7B-5e-5-300",
 }
+
+class GetModelName:
+    def __getitem__(self, name):
+        return _MODEL_TO_NAME.get(
+            name, os.getenv("MODEL_NAME")
+        )
+    
+MODEL_TO_NAME = GetModelName()
 
 SUBPROBLEM_SPLIT_PROMPT = """
   You are given a reasoning sequence that attempts to solve a math problem.
