@@ -306,6 +306,7 @@ def perform_inference_and_save(
     llm,
     system_prompt,
     args,
+    top_p=0.95,
 ):
     results = handler.load_existing_results(result_file)
     print(f"Loaded {len(results)} existing results.")
@@ -339,7 +340,7 @@ def perform_inference_and_save(
                 responses = list(e.map(fetch_partial, conversations))
         else:
             sampling_params = SamplingParams(
-                n=args.n, max_tokens=max_tokens, temperature=temp
+                n=args.n, max_tokens=max_tokens, temperature=temp, top_p=top_p
             )
             responses = llm.chat(
                 messages=conversations, sampling_params=sampling_params, use_tqdm=True
