@@ -36,12 +36,13 @@ def parse_arguments():
         help="Comma-separated list of evals to run (no spaces).",
     )
     parser.add_argument("--tp", type=int, default=8, help="Tensor Parallelism Degree")
+    parser.add_argument("--output-dir", type=str, help="Directory to save results.")
     parser.add_argument(
         "--filter-difficulty", action="store_true", help="Filter difficulty."
     )
     parser.add_argument("--source", type=str, help="Source for the dataset.")
     parser.add_argument(
-        "--output_file",
+        "--output-file",
         required=True,
         type=str,
         help="Output file to write results to.",
@@ -111,6 +112,7 @@ def main():
             "split": eval_to_split[eval_name],
             "tp": int(tp),
             "temperatures": temperatures,
+            "result_dir": args.output_dir,
             "llm": llm,
         }
 

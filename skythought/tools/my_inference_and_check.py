@@ -429,7 +429,7 @@ def perform_inference_and_save(
         json.dump(results, file, ensure_ascii=False, indent=4, cls=NumpyEncoder)
 
 
-def inference_eval(llm, model, dataset, split, tp, temperatures, **kwargs):
+def inference_eval(llm, model, dataset, split, tp, temperatures, result_dir="./", **kwargs):
     args = argparse.Namespace(
         model=model,
         dataset=dataset,
@@ -438,7 +438,7 @@ def inference_eval(llm, model, dataset, split, tp, temperatures, **kwargs):
         temperatures=temperatures,
         check=False,
         inference=False,
-        result_dir="./",
+        result_dir=result_dir,
         n=1,
         start=0,
         end=-1,
