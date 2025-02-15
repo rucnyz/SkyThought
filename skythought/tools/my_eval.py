@@ -95,11 +95,11 @@ def main():
     results = {}
     if args.model.startswith("openai"):
         llm = OpenAI()
-    elif args.model.startswith("deepseek"):
-        llm = OpenAI(
-            base_url="https://api.deepseek.com",
-            api_key=os.getenv("DEEPSEEK_API_KEY"),
-        )
+    # elif args.model.startswith("deepseek"):
+    #     llm = OpenAI(
+    #         base_url="https://api.deepseek.com",
+    #         api_key=os.getenv("DEEPSEEK_API_KEY"),
+    #     )
     else:
         llm = LLM(model=args.model, tensor_parallel_size=args.tp)
 

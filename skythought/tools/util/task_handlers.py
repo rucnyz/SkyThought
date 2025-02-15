@@ -112,10 +112,12 @@ class AIMETaskHandler(MathTaskHandler):
     
     @staticmethod
     def generate_prompt(prompt, model):
-        if MODEL_TO_NAME[model] == "Sky-T1-32B-Preview":
-            return prompt + "\nReturn your final response within \\boxed{{}}"
-        else:
-            return "Return your final response within \\boxed{{}}. " + prompt
+        # if MODEL_TO_NAME[model] == "Sky-T1-32B-Preview":
+        #     return prompt + "\nReturn your final response within \\boxed{{}}"
+        # else:
+        #     return "Return your final response within \\boxed{{}}. " + prompt
+        instruction = "Let's think step by step and output the final answer within \\boxed{}."
+        return f"{prompt} {instruction}"
     
     @staticmethod
     def get_question_key():
