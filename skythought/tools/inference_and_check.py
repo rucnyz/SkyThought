@@ -58,7 +58,7 @@ def perform_inference_and_check(handler: TaskHandler, temperatures, max_tokens, 
                 responses = list(e.map(fetch_partial, conversations))
 
         else:
-            sampling_params = SamplingParams(max_tokens=max_tokens, temperature=temp)
+            sampling_params = SamplingParams(max_tokens=max_tokens, temperature=temp, top_p=0.95)
             responses = llm.chat(messages=conversations, sampling_params=sampling_params, use_tqdm=True)
             
         total_correct = 0 
