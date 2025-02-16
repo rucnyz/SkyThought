@@ -173,3 +173,6 @@ test_*
 run_all.sh
 
 .idea
+
+out/
+tmp/
