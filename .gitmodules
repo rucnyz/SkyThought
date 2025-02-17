@@ -1,0 +1,3 @@
+[submodule "evaluate/lighteval"]
+	path = evaluate/lighteval
+	url = https://github.com/huggingface/lighteval.git
