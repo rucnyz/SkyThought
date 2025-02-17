@@ -74,8 +74,8 @@ def _judge_one_skythought(
     gold = strip_answer_string(gold)
     ret = []
     for response in responses:
-        response = strip_answer_string(response)
         response = extract_answer(response, use_last_number=use_last_number)
+        response = strip_answer_string(response)
         ret.append(float(math_equal(response, gold)))
 
     return ret
