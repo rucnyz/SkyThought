@@ -1,3 +1,4 @@
+.python-version
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -172,3 +173,6 @@ test_*
 run_all.sh
 
 .idea
+
+out/
+tmp/

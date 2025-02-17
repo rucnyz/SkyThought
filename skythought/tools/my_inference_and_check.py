@@ -10,8 +10,8 @@ from openai import OpenAI
 from tqdm import tqdm
 from vllm import LLM, SamplingParams
 
-from skythought.tools.util.model_utils import MODEL_TO_NAME, SYSTEM_PROMPT
-from skythought.tools.util.task_handlers import (
+from util.model_utils import MODEL_TO_NAME, SYSTEM_PROMPT
+from util.task_handlers import (
     TaskHandler,
     NUMINATaskHandler,
     TASK_HANDLERS,
@@ -306,6 +306,7 @@ def perform_inference_and_save(
     llm,
     system_prompt,
     args,
+    top_p=0.95,
 ):
     results = handler.load_existing_results(result_file)
     print(f"Loaded {len(results)} existing results.")
@@ -339,7 +340,7 @@ def perform_inference_and_save(
                 responses = list(e.map(fetch_partial, conversations))
         else:
             sampling_params = SamplingParams(
-                n=args.n, max_tokens=max_tokens, temperature=temp
+                n=args.n, max_tokens=max_tokens, temperature=temp, top_p=top_p
             )
             responses = llm.chat(
                 messages=conversations, sampling_params=sampling_params, use_tqdm=True
@@ -429,7 +430,7 @@ def perform_inference_and_save(
         json.dump(results, file, ensure_ascii=False, indent=4, cls=NumpyEncoder)
 
 
-def inference_eval(llm, model, dataset, split, tp, temperatures, **kwargs):
+def inference_eval(llm, model, dataset, split, tp, temperatures, result_dir="./", **kwargs):
     args = argparse.Namespace(
         model=model,
         dataset=dataset,
@@ -438,7 +439,7 @@ def inference_eval(llm, model, dataset, split, tp, temperatures, **kwargs):
         temperatures=temperatures,
         check=False,
         inference=False,
-        result_dir="./",
+        result_dir=result_dir,
         n=1,
         start=0,
         end=-1,

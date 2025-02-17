@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 from openai import OpenAI
 from vllm import LLM
 
-from skythought.tools.my_inference_and_check import inference_eval
+from my_inference_and_check import inference_eval
 
 # Define eval to split mapping
 eval_to_split = {
@@ -36,12 +36,13 @@ def parse_arguments():
         help="Comma-separated list of evals to run (no spaces).",
     )
     parser.add_argument("--tp", type=int, default=8, help="Tensor Parallelism Degree")
+    parser.add_argument("--output-dir", type=str, help="Directory to save results.")
     parser.add_argument(
         "--filter-difficulty", action="store_true", help="Filter difficulty."
     )
     parser.add_argument("--source", type=str, help="Source for the dataset.")
     parser.add_argument(
-        "--output_file",
+        "--output-file",
         required=True,
         type=str,
         help="Output file to write results to.",
@@ -95,11 +96,11 @@ def main():
     results = {}
     if args.model.startswith("openai"):
         llm = OpenAI()
-    elif args.model.startswith("deepseek"):
-        llm = OpenAI(
-            base_url="https://api.deepseek.com",
-            api_key=os.getenv("DEEPSEEK_API_KEY"),
-        )
+    # elif args.model.startswith("deepseek"):
+    #     llm = OpenAI(
+    #         base_url="https://api.deepseek.com",
+    #         api_key=os.getenv("DEEPSEEK_API_KEY"),
+    #     )
     else:
         llm = LLM(model=args.model, tensor_parallel_size=args.tp)
 
@@ -111,6 +112,7 @@ def main():
             "split": eval_to_split[eval_name],
             "tp": int(tp),
             "temperatures": temperatures,
+            "result_dir": args.output_dir,
             "llm": llm,
         }
 
