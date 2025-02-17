@@ -45,11 +45,20 @@ python gpu_monitor.py --interval 30 "MASTER_PORT=29501 llamafactory-cli train my
 ```
 
 ```shell
+# from skythought
+cd ./skythought/tools
 python my_eval.py --model NovaSky-AI/Sky-T1-32B-Preview \
---evals=MATH500,AIME,GPQADiamond \
---tp=4 \
---output_file=results.txt \
---temperatures=0
+  --evals=MATH500,AIME,GPQADiamond \
+  --tp=4 \
+  --output_file=results.txt \
+  --temperatures=0
+
+# lighteval
+python evaluate/new_eval.py --model agentica-org/DeepScaleR-1.5B-Preview \
+  --output-json X.json \
+  --n-generations 1 \
+  --seed 1234
+
 ```
 
 | Metric       | Sky-T1-32B-Preview | my-32B-240 | 32B  | my-7B-720 | 7B    | 3B   | QwQ  | ds-r1 | o1-preview |
