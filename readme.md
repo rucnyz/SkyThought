@@ -72,3 +72,8 @@ python evaluate/new_eval.py --model agentica-org/DeepScaleR-1.5B-Preview \
 | Math500      | 87.6               | 79.8  | 66.2      | 75.4  |
 | AIME2024     | 30.0               | 20.0  | 10.0      | 10.0  |
 | GPQA-Diamond | 47.47              | 42.93 | 31.82     | 34.34 |
+
+New eval
+| Metric       | Sky-T1-32B-Preview | 32B   | 7B-sft    | 7B    |
+|--------------|--------------------|-------|-----------|-------|
+| AIME2024     | 40.0               | 13.3  | 10.0      | 10.0  |
