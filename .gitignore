@@ -1,4 +1,3 @@
-.python-version
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -166,13 +165,7 @@ cython_debug/
 # Vim
 *.swp
 
-.json
+*.json
 token_usage/
-test_*
 
 run_all.sh
-
-.idea
-
-out/
-tmp/
