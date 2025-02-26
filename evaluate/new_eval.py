@@ -27,11 +27,13 @@ class MaxThinkLimiter:
         self,
         max_think_tokens_soft: int,
         max_think_tokens_hard: int,
+        start_think_token_id: int,
         stop_think_token_id: int,
     ):
         self.max_think_tokens_soft = max_think_tokens_soft
         self.max_think_tokens_hard = max_think_tokens_hard
         self.stop_think_token_id = stop_think_token_id
+        self.start_think_token_id = start_think_token_id
 
     def __call__(self, token_ids: list[int], logits: torch.Tensor) -> torch.Tensor:
         """
@@ -41,8 +43,16 @@ class MaxThinkLimiter:
 
         Gradually increase the probability of '</think>' token
         """
-        curr_len = len(token_ids)
-        if curr_len > self.mex_think_tokens_soft:
+        if (
+            self.start_think_token_id not in token_ids
+            or self.stop_think_token_id in token_ids
+        ):
+            return logits
+
+        self.start_think_token_pos = token_ids.index(self.start_think_token_id)
+        curr_len = len(token_ids) - self.start_think_token_pos
+
+        if curr_len > self.max_think_tokens_soft:
             # balance between token with max logits and stop_think
             max_logits = logits.max()
             curr_logits = logits[self.stop_think_token_id]
@@ -172,8 +182,11 @@ def main(
         max_tokens=32768,
         logits_processors=[
             MaxThinkLimiter(
-                max_think_tokens_soft=2048,
-                max_think_tokens_hard=2256,
+                max_think_tokens_soft=4096,
+                max_think_tokens_hard=8192,
+                start_think_token_id=model.get_tokenizer().encode(
+                    "<think>", add_special_tokens=False
+                )[0],
                 stop_think_token_id=model.get_tokenizer().encode(
                     "</think>", add_special_tokens=False
                 )[0],
