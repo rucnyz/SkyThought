@@ -1,10 +1,11 @@
 import argparse
 import json
+import os
 
-from datasets import load_dataset as hf_load_dataset
-from lighteval.tasks.requests import Doc
 import numpy as np
 import torch
+from datasets import load_dataset as hf_load_dataset
+from lighteval.tasks.requests import Doc
 from lighteval_tasks import expr_gold_metric
 from testing_util import extract_answer, math_equal, strip_answer_string
 from vllm import LLM, SamplingParams
@@ -56,12 +57,13 @@ class MaxThinkLimiter:
             # balance between token with max logits and stop_think
             max_logits = logits.max()
             curr_logits = logits[self.stop_think_token_id]
-            logits[self.stop_think_token_id] = curr_logits + (
+            new_logits = curr_logits + (
                 max_logits - curr_logits
             ) * (
                 (curr_len - self.max_think_tokens_soft)
                 / (self.max_think_tokens_hard - self.max_think_tokens_soft)
             )
+            logits[self.stop_think_token_id] = new_logits
 
         return logits
 
@@ -182,8 +184,8 @@ def main(
         max_tokens=32768,
         logits_processors=[
             MaxThinkLimiter(
-                max_think_tokens_soft=4096,
-                max_think_tokens_hard=8192,
+                max_think_tokens_soft=1024,
+                max_think_tokens_hard=2048,
                 start_think_token_id=model.get_tokenizer().encode(
                     "<think>", add_special_tokens=False
                 )[0],
@@ -276,6 +278,8 @@ if __name__ == "__main__":
     )
 
     args = parser.parse_args()
+
+    os.makedirs(os.path.dirname(args.output_json), exist_ok=True)
 
     main(
         model_path=args.model,
