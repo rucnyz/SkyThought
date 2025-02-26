@@ -4,6 +4,7 @@ import json
 from datasets import load_dataset as hf_load_dataset
 from lighteval.tasks.requests import Doc
 import numpy as np
+import torch
 from lighteval_tasks import expr_gold_metric
 from testing_util import extract_answer, math_equal, strip_answer_string
 from vllm import LLM, SamplingParams
@@ -19,6 +20,40 @@ def load_model(
         dtype="bfloat16",
         seed=seed,
     )
+
+
+class MaxThinkLimiter:
+    def __init__(
+        self,
+        max_think_tokens_soft: int,
+        max_think_tokens_hard: int,
+        stop_think_token_id: int,
+    ):
+        self.max_think_tokens_soft = max_think_tokens_soft
+        self.max_think_tokens_hard = max_think_tokens_hard
+        self.stop_think_token_id = stop_think_token_id
+
+    def __call__(self, token_ids: list[int], logits: torch.Tensor) -> torch.Tensor:
+        """
+        LogitsProcessor is a function that takes a list of previously generated
+        tokens and a tensor of the logits for the next token, and returns a modified
+        tensor of logits to sample from.
+
+        Gradually increase the probability of '</think>' token
+        """
+        curr_len = len(token_ids)
+        if curr_len > self.mex_think_tokens_soft:
+            # balance between token with max logits and stop_think
+            max_logits = logits.max()
+            curr_logits = logits[self.stop_think_token_id]
+            logits[self.stop_think_token_id] = curr_logits + (
+                max_logits - curr_logits
+            ) * (
+                (curr_len - self.max_think_tokens_soft)
+                / (self.max_think_tokens_hard - self.max_think_tokens_soft)
+            )
+
+        return logits
 
 
 class AIME2024:
@@ -135,6 +170,15 @@ def main(
         temperature=0.6,
         top_p=0.95,
         max_tokens=32768,
+        logits_processors=[
+            MaxThinkLimiter(
+                max_think_tokens_soft=2048,
+                max_think_tokens_hard=2256,
+                stop_think_token_id=model.get_tokenizer().encode(
+                    "</think>", add_special_tokens=False
+                )[0],
+            )
+        ],
     )
     responses = model.chat(conversations, sampling_params=sampling_params)
     raw_responses = [[out.text for out in res.outputs] for res in responses]
