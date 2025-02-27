@@ -1,14 +1,16 @@
 import argparse
 import json
 import os
+from typing import Any
 
 import numpy as np
 import torch
 from datasets import load_dataset as hf_load_dataset
+from vllm import LLM, SamplingParams
+
 from lighteval.tasks.requests import Doc
 from lighteval_tasks import expr_gold_metric
 from testing_util import extract_answer, math_equal, strip_answer_string
-from vllm import LLM, SamplingParams
 
 
 def load_model(
@@ -50,18 +52,21 @@ class MaxThinkLimiter:
         """
         if self.stop_think_token_id in token_ids:
             return logits
-        
+
         curr_len = len(token_ids)
 
         if curr_len > self.max_think_tokens_soft:
             # balance between token with max logits and stop_think
             max_logits = logits.max()
-            curr_logits = logits[self.stop_think_token_id]
-            new_logits = curr_logits + (max_logits - curr_logits) * (
-                (curr_len - self.max_think_tokens_soft)
-                / (self.max_think_tokens_hard - self.max_think_tokens_soft)
-            )
-            logits[self.stop_think_token_id] = new_logits
+            if self.max_think_tokens_hard == self.max_think_tokens_soft:
+                logits[self.stop_think_token_id] = max_logits
+            else:
+                curr_logits = logits[self.stop_think_token_id]
+                new_logits = curr_logits + (max_logits - curr_logits) * (
+                    (curr_len - self.max_think_tokens_soft)
+                    / (self.max_think_tokens_hard - self.max_think_tokens_soft)
+                )
+                logits[self.stop_think_token_id] = new_logits
 
         return logits
 
@@ -152,7 +157,7 @@ def judge_lighteval(
     responses: list[str],
     gold: list[str],
     docs: list[Doc],
-) -> list[float]:
+) -> list[list[Any]]:
     results = []
     for response, g, doc in zip(responses, gold, docs):
         results.append(_judge_one_lighteval(response, g, doc))
@@ -161,21 +166,21 @@ def judge_lighteval(
 
 
 def main(
-    model_path: str,
-    seed: int = 1234,
-    tp: int = 1,
-    output_json: str = "results.json",
+    model,
+    dataset,
+    output_json: str = "results/",
     n_generations: int = 16,
     max_think_tokens_soft: int = 2048,
     max_think_tokens_hard: int = 4096,
 ):
-    model = load_model(model_path, tp=tp, seed=seed)
-
-    aime_2024 = AIME2024()
-    conversations = aime_2024.generate_conversations()
-    prompts = aime_2024.generate_prompts()
-    golds = aime_2024.generate_answers()
-    docs = aime_2024.generate_lighteval_docs()
+    if dataset == "aime_2024":
+        aime_2024 = AIME2024()
+        conversations = aime_2024.generate_conversations()
+        prompts = aime_2024.generate_prompts()
+        golds = aime_2024.generate_answers()
+        docs = aime_2024.generate_lighteval_docs()
+    else:
+        raise ValueError(f"Dataset {dataset} not supported.")
 
     sampling_params = SamplingParams(
         n=n_generations,
@@ -252,6 +257,7 @@ if __name__ == "__main__":
         "--model",
         type=str,
         required=True,
+        nargs="+",
         help="Path to the model to evaluate.",
     )
     parser.add_argument(
@@ -275,30 +281,45 @@ if __name__ == "__main__":
         "--n-generations",
         type=int,
         default=16,
+        nargs="+",
         help="Number of generations to sample.",
     )
     parser.add_argument(
         "--max-think-tokens-soft",
         type=int,
         default=2048,
+        nargs="+",
     )
     parser.add_argument(
         "--max-think-tokens-hard",
         type=int,
         default=4096,
+        nargs="+",
     )
+    parser.add_argument("--dataset", type=str, default="aime_2024", nargs="+")
 
     args = parser.parse_args()
 
-    os.makedirs(os.path.dirname(args.output_json), exist_ok=True)
-
-    main(
-        model_path=args.model,
-        seed=args.seed,
-        tp=args.tp,
-        n_generations=args.n_generations,
-        output_json=args.output_json,
-        max_think_tokens_soft=args.max_think_tokens_soft,
-        max_think_tokens_hard=args.max_think_tokens_hard,
-    )
+    os.makedirs(args.output_json, exist_ok=True)
+    for model_name in args.model:
+        model = load_model(model_name, tp=args.tp, seed=args.seed)
+        for dataset in args.dataset:
+            for n_generations in args.n_generations:
+                for max_think_tokens_soft, max_think_tokens_hard in zip(
+                    args.max_think_tokens_soft, args.max_think_tokens_hard
+                ):
+                    output_json = os.path.join(
+                        args.output_json,
+                        f"{dataset}_{model_name.split('/')[-1]}_{n_generations}_{max_think_tokens_soft}_{max_think_tokens_hard}.json",
+                    )
+                    main(
+                        model=model,
+                        dataset=dataset,
+                        n_generations=n_generations,
+                        output_json=output_json,
+                        max_think_tokens_soft=max_think_tokens_soft,
+                        max_think_tokens_hard=max_think_tokens_hard,
+                    )
 # python3 evaluate/new_eval.py --model agentica-org/DeepScaleR-1.5B-Preview --output-json X.json --n-generations 1 --seed 1234 --max-think-tokens-soft 2048 --max-think-tokens-hard 4096
+
+# python new_eval.py --model agentica-org/DeepScaleR-1.5B-Preview deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --output-json out/new_eval_0225/ --n-generations 1 2 4 8 16 --seed 1234 --max-think-tokens-soft 2048 2048 4096 4096 8192 8192 --max-think-tokens-hard 2048 4096 4096 8192 8192 16384 --dataset aime_2024
