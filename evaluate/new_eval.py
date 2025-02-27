@@ -30,11 +30,13 @@ class MaxThinkLimiter:
         max_think_tokens_hard: int,
         start_think_token_id: int,
         stop_think_token_id: int,
+        tokenizer=None,
     ):
         self.max_think_tokens_soft = max_think_tokens_soft
         self.max_think_tokens_hard = max_think_tokens_hard
         self.stop_think_token_id = stop_think_token_id
         self.start_think_token_id = start_think_token_id
+        self.tokenizer = tokenizer
 
     def __call__(self, token_ids: list[int], logits: torch.Tensor) -> torch.Tensor:
         """
@@ -42,16 +44,14 @@ class MaxThinkLimiter:
         tokens and a tensor of the logits for the next token, and returns a modified
         tensor of logits to sample from.
 
+        token_ids only contains the generated tokens without the prompts
+
         Gradually increase the probability of '</think>' token
         """
-        if (
-            self.start_think_token_id not in token_ids
-            or self.stop_think_token_id in token_ids
-        ):
+        if self.stop_think_token_id in token_ids:
             return logits
-
-        self.start_think_token_pos = token_ids.index(self.start_think_token_id)
-        curr_len = len(token_ids) - self.start_think_token_pos
+        
+        curr_len = len(token_ids)
 
         if curr_len > self.max_think_tokens_soft:
             # balance between token with max logits and stop_think
@@ -192,6 +192,7 @@ def main(
                 stop_think_token_id=model.get_tokenizer().encode(
                     "</think>", add_special_tokens=False
                 )[0],
+                tokenizer=model.get_tokenizer(),
             )
         ],
     )
